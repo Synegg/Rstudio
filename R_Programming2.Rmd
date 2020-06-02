@@ -9,6 +9,563 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Conditionals and Control flow
+### Relational operators
+\setlength{\leftskip}{1cm}
+
+* Equality ==
+* Greater and less than <, >, <=, >=
+* Compare vectors
+* Compare matrices
+
+\setlength{\leftskip}{0cm}
+
+```{r}
+# Comparison of logicals
+TRUE==FALSE
+# Comparison of numerics
+-6*14 != 17-101
+# Comparison of character strings
+"useR" == "user"
+# Compare a logical with a numeric
+TRUE==1
+```
+```{r}
+# The linkedin and facebook vectors have already been created for you
+linkedin <- c(16, 9, 13, 5, 2, 17, 14)
+facebook <- c(17, 7, 5, 16, 8, 13, 14)
+# Popular days
+linkedin>15
+# Quiet days
+linkedin<=5
+# LinkedIn more popular than Facebook
+linkedin>facebook
+```
+
+```{r}
+# The social data has been created for you
+linkedin <- c(16, 9, 13, 5, 2, 17, 14)
+facebook <- c(17, 7, 5, 16, 8, 13, 14)
+views <- matrix(c(linkedin, facebook), nrow = 2, byrow = TRUE)
+# When does views equal 13?
+views==13
+# When is views less than or equal to 14?
+views<=14
+```
+
+### Logical operators
+\setlength{\leftskip}{1cm}
+
+* And & 
+* or |
+
+\setlength{\leftskip}{0cm}
+
+```{r}
+# The linkedin and last variable are already defined for you
+linkedin <- c(16, 9, 13, 5, 2, 17, 14)
+last <- tail(linkedin, 1)
+# Is last under 5 or above 10?
+last<5 | last>10
+# Is last between 15 (exclusive) and 20 (inclusive)?
+last > 15 & last <= 20
+```
+
+### Conditional Statements
+
+* The if and else statements
+* The else if statement
+
+## Loops
+* while loop
+* for loop
+
+```{r}
+# Initialize i as 1 
+i <- 1
+# Code the while loop
+while (i <= 10) {
+  print(3*i)
+  # if the triple i is divisible by 8
+  if ((3 * i) %% 8 == 0) {
+    break
+  }
+  i <- i + 1
+}
+```
+```{r}
+cities<-list("New York","Paris","London",
+         "Tokyo","Cape Town","Beijing")
+for(city in cities){
+  print(city)
+}  
+```
+```{r}
+# break statement
+cities<-list("New York","Paris","London",
+         "Tokyo","Cape Town","Beijing")
+for(city in cities){
+  if(nchar(city)==5){
+    break
+  }
+  print(city)
+}
+         
+```
+```{r}
+# Next statement
+cities<-list("New York","Paris","London",
+         "Tokyo","Cape Town","Beijing")
+for(city in cities){
+  if(nchar(city)==5){
+    next  # skip to next iteration
+  }
+  print(city)
+}
+```
+```{r}
+cities<-list("New York","Paris","London",
+         "Tokyo","Cape Town","Beijing")
+for(in 1:length(cities)){
+  print(city) # do not access to looping index
+}
+
+```
+```{r}
+# Subset the vector explicitly
+cities<-list("New York","Paris","London",
+         "Tokyo","Cape Town","Beijing")
+for(i in 1:length(cities)){ 
+  print(paste(cities[i]," is in position",i," of the cities vector."))
+}
+#paste() use to concatenate strings
+```
+
+```{r}
+# The nyc list is already specified
+nyc <- list(pop = 8405837, 
+            boroughs = c("Manhattan", "Bronx", "Brooklyn", "Queens", "Staten Island"), 
+            capital = FALSE)
+# Loop version 1
+for(i in nyc){
+  print(i)
+}
+# Loop version 2
+for(i in 1:length(nyc)){
+  print(nyc[[i]]) # access every element in the list using double brackets
+}
+```
+```{r}
+solfege<-matrix(c('Do','Ri','Mi',
+                  'Fa','So','la',
+                  'So','So','So',
+                  'F#','G#','A#'),
+                byrow = TRUE,ncol = 3)
+for(i in 1:nrow(solfege)){
+  for(j in 1:ncol(solfege)){
+    print(paste("On row",i,"and column",j,"the board contains",solfege[i,j]))
+  }
+}
+```
+```{r}
+# Pre-defined variables
+rquote <- "r's internals are irrefutably intriguing"
+chars <- strsplit(rquote, split = "")[[1]]
+# Initialize rcount
+rcount <- 0
+# Finish the for loop
+for (char in chars) {
+  if(char=="r"){
+    rcount<-rcount+1
+  }else if(char=='u'){
+    break
+  }
+  
+}
+# Print out rcount
+rcount
+```
+
+## Functions
+```{r}
+# Finish the pow_two() function
+pow_two <- function(x,print_info=TRUE) {
+  
+  y <- x ^ 2
+  if (print_info)
+     print(paste(x, "to the power two equals", y))
+  return(y)
+}
+pow_two(2)
+```
+### Function scoping
+* variables that are defined inside a function are not accessible outside that function. 
+```{r}
+# Check out the currently attached packages
+search()
+```
+
+
+## The apply family
+### lapply -- returns a list
+### sapply -- to simplify list
+### vapply -- explicitly specify output format
+```{r}
+pastaDough<-list(serving=6,
+          ingredients=c("Flour","Eggs",
+                        "Olive oil","Salt"),
+          sugar=FALSE)
+lapply(pastaDough, class)
+pastaIng<-c("Flour","Eggs","Olive oil","Salt")
+lapply(pastaIng, nchar)
+unlist(lapply(pastaIng, nchar))
+```
+```{r}
+meatPrices<-list(2.99,5.88,3.76,3,5.6)
+# Function 1
+trible<-function(x){
+  3*x
+}
+result<-lapply(meatPrices, trible)
+str(result)
+unlist(result)
+# Function 2
+multiply<-function(x,factor){
+  x*factor
+}
+times3<-lapply(meatPrices, multiply,factor=3)
+unlist(times3)
+times4<-lapply(meatPrices,multiply,factor=8)
+unlist(times4)
+```
+```{r}
+pioneers <- c("GAUSS:1777", "BAYES:1702", "PASCAL:1623", "PEARSON:1857")
+# Split names from birth year
+split_math <- strsplit(pioneers, split = ":")
+unlist(split_math)
+split_low<-lapply(split_math,tolower)
+unlist(split_low)
+str(split_low)
+
+# Write function select_first()
+select_first <- function(x) {
+  x[1]
+}
+# Apply select_first() over split_low: names
+names<-lapply(split_low,select_first)
+# Write function select_second()
+select_second <- function(x) {
+  x[2]
+}
+# Apply select_second() over split_low: years
+years<-lapply(split_low,select_second)
+```
+### Anonymous Function
+```{r}
+# Named function
+triple <- function(x) { 3 * x }
+
+# Anonymous function with same implementation
+function(x) { 3 * x }
+
+# Use anonymous function inside lapply()
+lapply(list(1,2,3), function(x) { 3 * x })
+```
+
+### sapply
+```{r}
+pastaIng<-c("Flour","Eggs","Olive oil","Salt")
+result1<-sapply(pastaIng,nchar)
+unlist(result1)
+# use.names
+result2<-sapply(pastaIng,nchar,USE.NAMES = FALSE)
+result2
+```
+```{r}
+first_and_last<-function(name){
+  name<-gsub(" ", "",name)
+  letters<-strsplit(name,split="")[[1]]
+  c(first=min(letters),last=max(letters))
+}
+# Call the function
+first_and_last("Boston")
+sapply(pastaIng, firsr_and_last)
+```
+```{r}
+temp<-list(c(12,15,17,18,16,12),
+           c(14,35,67,3,3,8,5),
+           c(45,67,34,22,23,64))
+lowest<-sapply(temp, min)
+highest<-sapply(temp,max)
+lowest
+highest
+# Function
+extremes<-function(x){
+  c(min=min(x),max=max(x))
+}
+sapply(temp,extremes)
+```
+
+```{r}
+print_info <- function(x) {
+  # cat
+  cat("The average temperature is", mean(x), "\n")
+} 
+
+# Apply print_info() over temp using sapply()
+sapply(temp,print_info)
+
+# Apply print_info() over temp using lapply()
+lapply(temp,print_info)
+?cat
+```
+```{r}
+# runif generates random numbers
+sapply(list(runif (10), runif (10)), 
+       function(x) c(min = min(x), mean = mean(x), max = max(x)))
+```
+
+### vapply
+```{r}
+# Definition of basics()
+basics <- function(x) {
+  c(min = min(x), mean = mean(x), max = max(x))
+}
+vapply(temp,basics,FUN.VALUE=numeric(3))
+```
+
+## Utilities
+```{r}
+#Functions for data structure
+li<-list(log=TRUE,
+         ch="hello",
+         int_vec=sort(rep(seq(8,2,by=-2),times=2)))
+str(li)
+sort(rep(seq(8,2,by=-2),times=2))
+seq(1,10,by=3)
+
+
+seq(8,2,by=-2)
+seq(2,8,by=2)
+```
+```{r}
+rep(c(1,2,3,4),times=2)
+rep(c(1,2,3,4),each=2)
+```
+
+### append() -- Merge vectors or lists.
+* is.*(): Check for the class of an R object.
+* as.*(): Convert an R object from one class to another.
+```{r}
+rh<-list(10,15,23,12)
+lh<-list(5,8,22,16,9)
+both<-append(rh,lh)
+# use unlist() to convert lists to vectors
+both_vector<-unlist(both)
+sort(both_vector,decreasing = TRUE)
+class(both_vector)
+class(both)
+```
+
+### Regular expressions -- regex
+* Sequence of (meta)characters
+* Pattern existence
+* Pattern replacement
+* Pattern extraction
+* grep(), grepl() -- check the pattern existence
+* sub(),gsub()
+
+```{r}
+# grepl()
+animals<-c("cat","dog","bird","turtle","moose","ant")
+# Find "a" in their name
+grepl(pattern ="a",x=animals)
+# Match strings that start with an "a"
+grepl(pattern="^a",x=animals)
+# $ matches the empty string at end of a line
+grepl(pattern="e$",x=animals)
+```
+
+```{r}
+# grep()
+animals<-c("cat","dog","bird","turtle","moose","ant")
+# Get a vector of indices of the elements of x that yield a match
+grep(pattern = "a",x=animals)
+# Do the same thing by using which on grepl()
+which(grepl(pattern = "a",x=animals))
+
+grep
+```
+```{r}
+# sub() takes three arguments: pattern, replacement, x
+# this only replace one same letter
+sub(pattern = "o",replacement = "e",x=animals)
+# replace two same pattern at a time
+gsub(pattern = "o",replacement = "e",x=animals)
+# or, and
+gsub(pattern = "a|e",replacement = "_",x=animals)
+gsub(pattern = "a|e|d",replacement = "#",x=animals)
+```
+
+
+```{r}
+# The emails vector has already been defined for you
+emails <- c("john.doe@ivyleague.edu", 
+            "education@world.gov", 
+            "dalai.lama@peace.org",
+            "invalid.edu", 
+            "quant@bigdatacollege.edu", 
+            "cookie.monster@sesame.tv")
+# Use grepl() to match for "edu"
+grepl(pattern="edu",x=emails) # return a logical vector
+# Use grep() to match for "edu", save result to hits
+hits1<-grep(pattern="edu",x=emails) # return a vector
+hits1
+emails[hits]
+hits2<-grep(pattern="@.*\\.edu$",x=emails)
+hits2
+emails[hits2]
+# Use sub() to convert the email domains to funny.edu
+sub(pattern="@.*\\.edu$",replacement="@funny.edu",x=emails)
+```
+
+* .*: A usual suspect! It can be read as "any character that is matched zero or more times".
+* \\s: Match a space. The "s" is normally a character, escaping it (\\) makes it a metacharacter.
+* [0-9]+: Match the numbers 0 to 9, at least once (+).
+* ([0-9]+): The parentheses are used to make parts of the matching string available to define the replacement. The \\1 in the replacement argument of sub() gets set to the string that is captured by the regular expression [0-9]+.
+
+```{r}
+awards <- c("Won 1 Oscar.",
+  "Won 1 Oscar. Another 9 wins & 24 nominations.",
+  "1 win and 2 nominations.",
+  "2 wins & 3 nominations.",
+  "Nominated for 2 Golden Globes. 1 more win & 2 nominations.",
+  "4 wins & 1 nomination.")
+
+sub(".*\\s([0-9]+)\\snomination.*$", "\\1", awards)
+```
+
+
+## Times and dates
+```{r}
+today<-Sys.Date()
+today
+class(today)
+now<-Sys.time()
+now
+class(now)
+# Create Date
+date<-as.Date("2111-11-11")
+class(date)
+date
+```
+
+## Dates 
+* %Y: 4-digit year (1982)
+* %y: 2-digit year (82)
+* %m: 2-digit month (01)
+* %d: 2-digit day of the month (13)
+* %A: weekday (Wednesday)
+* %a: abbreviated weekday (Wed)
+* %B: month (January)
+* %b: abbreviated month (Jan)
+```{r}
+# Definition of character strings representing dates
+str1 <- "May 23, '96"
+str2 <- "2012-03-15"
+str3 <- "30/January/2006"
+# Convert to yyyy-dd-mm format, need to specify the format
+date1<-as.Date(str1, format = "%b %d, '%y")
+date2<-as.Date(str2)
+date3<-as.Date(str3,format ="%d/%b/%Y" )
+date1
+date2
+date3
+# Convert dates to formatted strings
+# Select the weekday for date1
+format(date1,"%A")
+# Select the day of the month for date2
+format(date2,"%d")
+# Select the abbreviated month and the 4-digit year, separated by a space.
+format(date3,"%b %Y")
+# Convert dates to character strings that use different date notation
+today<-Sys.Date()
+format(Sys.Date(), format="Today is a %A" )
+```
+
+## Times
+* To convert a character string to a POSIXct object -- **as.POSIXct()**
+* **as.POSIXct()** uses a default format to match character strings. In this case, it's %Y-%m-%d %H:%M:%S
+
+* To convert from a POSIXct object to a character string -- **format()**
+* ?strptime
+  * %H: hours as a decimal number (00-23)
+  * %I: hours as a decimal number (01-12)
+  * %M: minutes as a decimal number
+  * %S: seconds as a decimal number
+  * %T: shorthand notation for the typical format %H:%M:%S
+  * %p: AM/PM indicator
+```{r}
+# Definition of character strings representing times
+str1 <- "May 23, '96 hours:23 minutes:01 seconds:45"
+str2 <- "2012-3-12 14:23:08"
+# Convert the strings to POSIXct objects: time1, time2
+time1<-as.POSIXct(str1,format="%B %d, '%y hours:%H minutes:%M seconds:%S")
+time2<-as.POSIXct(str2)
+# Create a string from time1 containing only the minutes.
+format(time1,"%M")
+# Extract the hours and minutes as "hours:minutes AM/PM". 
+format(time2,"%H:%M %p")
+```
+
+## Calculation with Dates
+```{r}
+day1<-as.Date("2020-2-5")
+day2<-as.Date("2020-2-10")
+day3<-as.Date("2020-3-25")
+day4<-as.Date("2020-3-30")
+day5<-as.Date("2020-4-6")
+# Difference between last and first pizza day
+day5-day1
+# Create vector pizza
+pizza<-c(day1,day2,day3,day4,day5)
+day_diff<-diff(pizza)
+day_diff
+# Average period between two consecutive pizza days
+mean(day_diff)
+```
+## Calculations with times
+```{r}
+now <- Sys.time()
+now + 3600          # add an hour
+now - 3600 * 24     # subtract a day
+# Adding or substracting time objects
+birth <- as.POSIXct("1879-03-14 14:37:23")
+death <- as.POSIXct("1955-04-18 03:47:12")
+einstein <- death - birth
+einstein
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## R Markdown
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
