@@ -1,0 +1,129 @@
+---
+title: "R_Assignment3"
+author: "Ni"
+date: "5/25/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+makeVector <- function(x = numeric()) {
+     m <- NULL
+     set <- function(y) {
+          x <<- y
+          m <<- NULL
+     }
+     get <- function() x
+     setmean <- function(mean) m <<- mean
+     getmean <- function() m
+     list(set = set, get = get,
+          setmean = setmean,
+          getmean = getmean)
+}
+cachemean <- function(x, ...) {
+     m <- x$getmean()
+     if(!is.null(m)) {
+          message("getting cached data")
+          return(m)
+     }
+     data <- x$get()
+     m <- mean(data, ...)
+     x$setmean(m)
+     m
+}
+c=makeVector(1:100)
+cachemean(c)
+
+
+
+```
+
+
+
+```{r}
+# Create an object that stores the matrix
+# Initialize x and inv
+# x is initialize as a function argument, the default is an empty matrix
+makeCacheMatrix <- function(x=matrix()) { 
+  # inv is set to NULL
+     inv <- NULL
+     
+  # Defines the "behaviors" for objects x and inv
+  # Setters
+     set <- function(y) { # y is an arg in set(), it is assumed to be a matrix 
+          x <<- y # Assign the input arg to x object
+          inv <<- NULL  # Assign the value of NULL to inv object 
+     }
+     # Define the getter for matrix x
+     get <- function() x
+     # Define the setter for the inverse inv
+     setinv <- function(inverse) inv <<- inverse
+     # Define the getter for inv
+     getinv <- function() inv
+     # Create a new object by rewriting a list()
+     list(set = set, get = get,
+          setinv = setinv,
+          getinv = getinv)
+}
+cacheSolve<-function(x,...){
+  inv <- x$getinv()
+     if(!is.null(inv)) {
+          message("getting cached data")
+          return(inv)
+     }
+     data <- x$get()
+     inv <- solve(data)
+     x$setinv(inv)
+     inv
+     
+  
+}
+
+x=matrix(1:4,2,2)
+m=makeCacheMatrix(x)
+m$get()
+cacheSolve(m)
+```
+
+```{r}
+a=matrix(1:4,2,2)
+a
+solve(a)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
