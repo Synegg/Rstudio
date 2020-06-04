@@ -1,0 +1,104 @@
+---
+title: "Air Pollution"
+author: "Ni"
+date: "5/20/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+# 'directory' is a char vector of length 1 indicating the location of the CSV file
+# 'pollutant' is a char vector of length 1 indicating the the name of the pollutant for 
+# which we will calculate the mean, either 'sulfate' or 'nitrate'
+# 'id' is an integer vec indicating the monitor ID numbers to be used
+pollutantmean<-function(directory, pollutant, id=1:332){
+ 
+  # Create a list of files
+  file_lists=list.files(directory,full.names=TRUE)
+  # Create an empty data frame
+  pollutant_data=data.frame()
+  for (i in id){
+    pollutant_data=rbind(pollutant_data,read.csv(file_lists[i]))
+  
+  }
+  
+  
+  mean_data=mean(pollutant_data[, pollutant],na.rm = TRUE)
+  return(mean_data)
+}
+pollutantmean("specdata","sulfate",1:10)
+
+```
+
+```{r}
+complete<-function(directory,id=1:332){
+  # Create a list of files
+  file_lists=list.files(directory,full.names=TRUE)
+  # Create an empty data frame
+  pollutant_data=data.frame()
+  for (i in id){
+    # x is an integer class
+    x=read.csv(file_lists[i])
+    # calculate the sum, x need to be converted 
+    # complete.case return a logical vector 
+    nobs=sum(complete.cases(x))
+    
+    pollutant_data=rbind(pollutant_data,data.frame(i,nobs))
+  }
+  colnames(pollutant_data)=c("id","nobs")
+  return(pollutant_data)
+}
+complete("specdata",1:4)
+```
+
+```{r}
+corr<-function(directory,threadhold=0){
+  
+  file_lists=list.files(directory,full.names = TRUE)
+  # create an empty vector
+  pollutant_data=vector(mode = "numeric",length = 0)
+  
+  for(i in 1:length(file_lists)){
+    # read the file
+    x=read.csv(file_lists[i])
+    # calculate the column sum
+    csum=sum((!is.na(x$sulfate))&(!is.na(x$nitrate)))
+    if(csum>threadhold){
+      #Extract data of niteate and sulfate and calculate correlation between them
+      sul=x[which(!is.na(x$sulfate)),]
+      nit=sul[which(!is.na(sul$nitrate)),]
+      pollutant_data=c(pollutant_data,cor(nit$sulfate,nit$nitrate))
+    
+    }
+  }
+  pollutant_data
+}
+cr=corr("specdata",150)
+head(cr)
+summary(cr)
+```
+
+
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
