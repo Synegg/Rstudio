@@ -8,76 +8,116 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+#Coursera_R Programming 
+## Programming Assignment 1 Air Pollution
+**Goal: write three functions that interacts with the dataset.**
+**Data: The zip file contains 332 csv files. These are pollution monitoring data for fine particulate matter (PM) air pollution at 332 locations in the United States. Each file contains data from a single monitor and the ID number for each monitor is contained in the file name. For example, data for monitor 200 is contained in the file "200.csv". Each file contains three variables:**
+
+* Date: the date of the observation in YYYY-MM-DD format (year-month-day)
+* sulfate: the level of sulfate PM in the air on that date (measured in micrograms per cubic meter)
+* nitrate: the level of nitrate PM in the air on that date (measured in micrograms per cubic meter)
+
+### Part 1
+### The'pollutantmean' function
+* Calculate the mean of a pollutant (sulfate or nitrate) across a specified list of monitors. 
+* The function takes three arguments: 'directory', 'pollutant', and 'id'. 
+* Given a vector monitor ID numbers, 'pollutantmean' reads data from the directory specified in the 'directory' argument and returns the mean of the pollutant across all of the monitors, ignoring any missing values coded as NA. 
+
 ```{r}
 # 'directory' is a char vector of length 1 indicating the location of the CSV file
 # 'pollutant' is a char vector of length 1 indicating the the name of the pollutant for 
 # which we will calculate the mean, either 'sulfate' or 'nitrate'
 # 'id' is an integer vec indicating the monitor ID numbers to be used
+
+# The function takes three arguments
 pollutantmean<-function(directory, pollutant, id=1:332){
  
   # Create a list of files
-  file_lists=list.files(directory,full.names=TRUE)
-  # Create an empty data frame
-  pollutant_data=data.frame()
+  # list.file() is use to list the files in a directory
+  all_csv_files=list.files(directory,full.names=TRUE)
+  # Create an empty data frame, will be used to store specific data later
+  desired_data=data.frame()
+  # i is the index of each csv file
   for (i in id){
-    pollutant_data=rbind(pollutant_data,read.csv(file_lists[i]))
+    # loop over the index, store the selected data to the empty dataframe by use row combine to combine each readed csv file 
+    desired_data=rbind(desired_data,read.csv(all_csv_files[i]))
   
   }
   
-  
-  mean_data=mean(pollutant_data[, pollutant],na.rm = TRUE)
+  # calculate the mean of a specific column, remove the NA
+  mean_data=mean(desired_data[, pollutant],na.rm = TRUE)
+  # return the mean
   return(mean_data)
 }
+# Call the function by specifying three arguments
 pollutantmean("specdata","sulfate",1:10)
+pollutantmean("specdata","nitrate",1:10)
 
 ```
 
+### Part2
+### A function is used to 
+* Read a directory full of files and report the number of completely observed cases in each data file. 
+* The function should return a data frame where the first column is the name of the file and the second column is the number of complete cases. 
 ```{r}
+# The function takes two argument, id is a default arg
 complete<-function(directory,id=1:332){
   # Create a list of files
-  file_lists=list.files(directory,full.names=TRUE)
+  all_csv_files=list.files(directory,full.names=TRUE)
   # Create an empty data frame
-  pollutant_data=data.frame()
+  desired_data=data.frame()
   for (i in id){
-    # x is an integer class
-    x=read.csv(file_lists[i])
-    # calculate the sum, x need to be converted 
-    # complete.case return a logical vector 
-    nobs=sum(complete.cases(x))
-    
-    pollutant_data=rbind(pollutant_data,data.frame(i,nobs))
+    # The read_file is an integer class
+    read_file=read.csv(all_csv_files[i])
+    # Calculate the sum, read_file need to be converted 
+    # The complete.case return a logical vector 
+    # Calculate the total number of complete case in each readed file
+    number_of_cmpcase=sum(complete.cases(read_file))
+    # After calculating, store each result in a data frame
+    desired_data=rbind(desired_data,
+                       data.frame(i,number_of_cmpcase))
   }
-  colnames(pollutant_data)=c("id","nobs")
-  return(pollutant_data)
+  # Change the column names of the data frame
+  colnames(desired_data)=c("id","nobs")
+  return(desired_data)
 }
-complete("specdata",1:4)
+# Call the function, specify the argument, the result will be a data frame with two columns.
+complete("specdata",1:10)
 ```
 
+### Part3
+### Write a function that takes a directory of data files and a threshold for complete cases and calculates the correlation between sulfate and nitrate for monitor locations where the number of completely observed cases (on all variables) is greater than the threshold. 
+### The function should return **a vector** of correlations for the monitors that meet the threshold requirement. If no monitors meet the threshold requirement, then the function should return a numeric vector of length 0. A prototype of this function follows
 ```{r}
+
 corr<-function(directory,threadhold=0){
   
-  file_lists=list.files(directory,full.names = TRUE)
+  all_csv_files=list.files(directory,full.names = TRUE)
   # create an empty vector
-  pollutant_data=vector(mode = "numeric",length = 0)
+  corr_vector=vector(mode = "numeric",length = 0)
   
-  for(i in 1:length(file_lists)){
+  for(i in 1:length(all_csv_files)){
     # read the file
-    x=read.csv(file_lists[i])
+    read_file=read.csv(all_csv_files[i])
     # calculate the column sum
-    csum=sum((!is.na(x$sulfate))&(!is.na(x$nitrate)))
+    # is.na(read_file$sulfate) -- select the sulfate col, is.na() check the NA values, which will return true if it is NA. So !is.na(read_file$sulfate) return true that values in the data file is non-na. 
+    csum=sum((!is.na(read_file$sulfate))&(!is.na(read_file$nitrate)))
     if(csum>threadhold){
       #Extract data of niteate and sulfate and calculate correlation between them
-      sul=x[which(!is.na(x$sulfate)),]
-      nit=sul[which(!is.na(sul$nitrate)),]
-      pollutant_data=c(pollutant_data,cor(nit$sulfate,nit$nitrate))
+      sul=read_file[which(!is.na(read_file$sulfate)), ]
+      nit=sul[which(!is.na(sul$nitrate)), ]
+      corr_vector=c(corr_vector,cor(nit$sulfate,nit$nitrate))
     
     }
   }
-  pollutant_data
+  corr_vector
+
 }
-cr=corr("specdata",150)
+cr=corr("specdata",1)
+
 head(cr)
 summary(cr)
+
 ```
 
 
